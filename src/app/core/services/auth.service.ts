@@ -25,6 +25,8 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this._claims() !== null);
   readonly username = computed(() => this._claims()?.sub ?? null);
   readonly authorities = computed(() => this._claims()?.authorities ?? []);
+  /** Platform-level super-authority - see the backend's UserPrincipal for how this gets embedded. Bypasses per-project checks too (see ProjectService/ProjectAuthorizationService on the backend). */
+  readonly isMasterAdmin = computed(() => this.authorities().includes('MASTER_ADMIN'));
   readonly user = this._user.asReadonly();
 
   private readInitialClaims(): AccessTokenClaims | null {

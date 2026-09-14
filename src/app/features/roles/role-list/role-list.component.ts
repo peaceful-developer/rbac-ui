@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { RoleService } from '../../../core/services/role.service';
 import { PermissionService } from '../../../core/services/permission.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Role } from '../../../core/models/role.model';
 import { Permission } from '../../../core/models/permission.model';
 import { HasPermissionDirective } from '../../../core/directives/has-permission.directive';
@@ -36,11 +37,18 @@ export class RoleListComponent implements OnInit {
   private readonly permissionService = inject(PermissionService);
   private readonly notifications = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
+  private readonly auth = inject(AuthService);
 
   readonly displayedColumns = ['name', 'description', 'permissions', 'actions'];
   readonly roles = signal<Role[]>([]);
   readonly permissions = signal<Permission[]>([]);
   readonly loading = signal(true);
+  readonly isMasterAdmin = this.auth.isMasterAdmin;
+
+  /** Locked (non-editable) roles can only be changed by a Master Admin - mirrors RoleService.requireEditable on the backend. */
+  canManageRole(role: Role): boolean {
+    return role.editable || this.isMasterAdmin();
+  }
 
   ngOnInit(): void {
     this.permissionService.list().subscribe((permissions) => this.permissions.set(permissions));

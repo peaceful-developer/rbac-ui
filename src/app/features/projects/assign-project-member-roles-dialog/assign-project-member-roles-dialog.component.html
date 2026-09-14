@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Assign roles &mdash; &#64;{{ data.member.username }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Roles</mat-label>
+      <mat-select formControlName="roles" multiple>
+        @for (role of selectableRoles(); track role.id) {
+          <mat-option [value]="role.name">{{ role.name }}</mat-option>
+        }
+      </mat-select>
+      @if (form.controls.roles.hasError('required')) {
+        <mat-error>Select at least one role</mat-error>
+      }
+    </mat-form-field>
+  </form>
+
+  @if (errorMessage()) {
+    <div class="dialog-error">{{ errorMessage() }}</div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="loading()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="loading()">
+    @if (loading()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      Save
+    }
+  </button>
+</mat-dialog-actions>

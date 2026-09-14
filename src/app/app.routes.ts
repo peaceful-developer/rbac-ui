@@ -41,6 +41,15 @@ export const routes: Routes = [
         data: { permission: 'PERMISSION_READ' },
       },
       {
+        path: 'projects',
+        loadComponent: () => import('./features/projects/project-list/project-list.component').then((m) => m.ProjectListComponent),
+      },
+      {
+        path: 'projects/:id/members',
+        loadComponent: () =>
+          import('./features/projects/project-members/project-members.component').then((m) => m.ProjectMembersComponent),
+      },
+      {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile.component').then((m) => m.ProfileComponent),
       },

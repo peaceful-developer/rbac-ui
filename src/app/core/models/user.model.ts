@@ -6,9 +6,14 @@ export interface User {
   lastName: string | null;
   enabled: boolean;
   accountNonLocked: boolean;
+  masterAdmin: boolean;
   roles: string[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SetMasterAdminRequest {
+  masterAdmin: boolean;
 }
 
 export interface CreateUserRequest {

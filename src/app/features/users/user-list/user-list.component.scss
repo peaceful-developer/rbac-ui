@@ -34,3 +34,9 @@ table {
   --mdc-chip-elevated-container-color: var(--mat-sys-error-container);
   --mdc-chip-label-text-color: var(--mat-sys-on-error-container);
 }
+
+.master-admin-chip {
+  --mdc-chip-elevated-container-color: var(--mat-sys-tertiary-container);
+  --mdc-chip-label-text-color: var(--mat-sys-on-tertiary-container);
+  font-weight: 600;
+}

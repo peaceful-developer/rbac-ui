@@ -5,10 +5,21 @@
       <span>IAM Portal</span>
     </div>
 
+    @if (isMasterAdmin()) {
+      <div class="master-admin-badge">
+        <mat-icon>verified_user</mat-icon>
+        <span>Master Admin</span>
+      </div>
+    }
+
     <mat-nav-list>
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
         <mat-icon matListItemIcon>dashboard</mat-icon>
         <span matListItemTitle>Dashboard</span>
+      </a>
+      <a mat-list-item routerLink="/projects" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>folder</mat-icon>
+        <span matListItemTitle>Projects</span>
       </a>
       <a
         mat-list-item
