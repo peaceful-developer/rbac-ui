@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit role' : 'Create role' }}</h2>
+
+<mat-dialog-content>
+  @if (isEdit) {
+    <form [formGroup]="editForm" class="dialog-form">
+      <p class="role-name-readonly">{{ data.role?.name }}</p>
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3" cdkFocusInitial></textarea>
+      </mat-form-field>
+    </form>
+  } @else {
+    <form [formGroup]="createForm" class="dialog-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" cdkFocusInitial />
+        @if (createForm.controls.name.hasError('required') && createForm.controls.name.touched) {
+          <mat-error>Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3"></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Permissions</mat-label>
+        <mat-select formControlName="permissions" multiple>
+          @for (permission of data.permissions; track permission.id) {
+            <mat-option [value]="permission.name">{{ permission.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </form>
+  }
+
+  @if (errorMessage()) {
+    <div class="dialog-error">{{ errorMessage() }}</div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="loading()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="loading()">
+    @if (loading()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      {{ isEdit ? 'Save changes' : 'Create role' }}
+    }
+  </button>
+</mat-dialog-actions>

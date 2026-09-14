@@ -1,0 +1,177 @@
+@use '@angular/material' as mat;
+
+// Self-hosted fonts (public/fonts) - avoids depending on Google Fonts at
+// runtime, which is both more robust behind restrictive networks/proxies
+// and one less third-party origin the app has to trust.
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('/fonts/roboto-300.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/roboto-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/roboto-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/material-icons.woff2') format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+}
+
+// Custom Material 3 "Blue" theme - see https://material.angular.io/guide/theming
+html {
+  color-scheme: light;
+
+  @include mat.theme((
+    color: (
+      theme-type: light,
+      primary: mat.$blue-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+// Utility classes used across feature components
+.spacer {
+  flex: 1 1 auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.page {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+}
+
+.table-card {
+  overflow-x: auto;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+
+  mat-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+}
+
+.form-field-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  > * {
+    flex: 1 1 220px;
+  }
+}
+
+.dialog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 320px;
+  padding-top: 4px;
+
+  mat-checkbox {
+    margin: 4px 0;
+  }
+}
+
+.dialog-error {
+  color: var(--mat-sys-error);
+  font-size: 0.875rem;
+  margin: 4px 0 12px;
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: var(--mat-sys-error-container);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-error-container);
+}
+
+.snackbar-success {
+  --mdc-snackbar-container-color: var(--mat-sys-primary-container);
+  --mdc-snackbar-supporting-text-color: var(--mat-sys-on-primary-container);
+}
+
+.role-name-readonly {
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+}

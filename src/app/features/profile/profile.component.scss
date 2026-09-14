@@ -1,0 +1,39 @@
+.profile-card {
+  margin-bottom: 24px;
+  max-width: 560px;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-avatar {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-primary);
+}
+
+.profile-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.profile-username,
+.profile-email {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.9rem;
+}
+
+.profile-roles {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.password-card {
+  max-width: 480px;
+}

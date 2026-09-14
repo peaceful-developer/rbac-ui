@@ -1,0 +1,36 @@
+table {
+  width: 100%;
+}
+
+.loading-row {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.chip-row {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.actions-header,
+.actions-cell {
+  text-align: right;
+}
+
+.status-chip {
+  font-size: 0.75rem;
+}
+
+.status-active {
+  --mat-chip-selected-container-color: var(--mat-sys-tertiary-container);
+  --mdc-chip-elevated-container-color: var(--mat-sys-tertiary-container);
+  --mdc-chip-label-text-color: var(--mat-sys-on-tertiary-container);
+}
+
+.status-disabled,
+.status-locked {
+  --mdc-chip-elevated-container-color: var(--mat-sys-error-container);
+  --mdc-chip-label-text-color: var(--mat-sys-on-error-container);
+}
