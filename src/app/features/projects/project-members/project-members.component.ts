@@ -9,13 +9,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialog } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
 import { ProjectService } from '../../../core/services/project.service';
-import { UserService } from '../../../core/services/user.service';
 import { RoleService } from '../../../core/services/role.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { Project, ProjectMember } from '../../../core/models/project.model';
+import { CandidateUser, Project, ProjectMember } from '../../../core/models/project.model';
 import { Role } from '../../../core/models/role.model';
-import { User } from '../../../core/models/user.model';
 import { AddProjectMemberDialogComponent, AddProjectMemberDialogData } from '../add-project-member-dialog/add-project-member-dialog.component';
 import {
   AssignProjectMemberRolesDialogComponent,
@@ -44,7 +42,6 @@ export class ProjectMembersComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
-  private readonly userService = inject(UserService);
   private readonly roleService = inject(RoleService);
   private readonly notifications = inject(NotificationService);
   private readonly dialog = inject(MatDialog);
@@ -55,7 +52,6 @@ export class ProjectMembersComponent implements OnInit {
   readonly displayedColumns = ['username', 'email', 'roles', 'actions'];
   readonly project = signal<Project | null>(null);
   readonly members = signal<ProjectMember[]>([]);
-  readonly allUsers = signal<User[]>([]);
   readonly roles = signal<Role[]>([]);
   readonly loading = signal(true);
 
@@ -73,43 +69,38 @@ export class ProjectMembersComponent implements OnInit {
     forkJoin({
       project: this.projectService.getById(this.projectId),
       members: this.projectService.listMembers(this.projectId),
-      users: this.userService.list(0, 200),
       roles: this.roleService.list(),
     }).subscribe({
-      next: ({ project, members, users, roles }) => {
+      next: ({ project, members, roles }) => {
         this.project.set(project);
         this.members.set(members);
-        this.allUsers.set(users.content);
         this.roles.set(roles);
         this.loading.set(false);
       },
       error: () => {
         this.loading.set(false);
-        this.router.navigate(['/projects']);
+        this.router.navigate(['/dashboard']);
       },
     });
   }
 
-  private candidateUsers(): User[] {
-    const memberIds = new Set(this.members().map((m) => m.userId));
-    return this.allUsers().filter((u) => !memberIds.has(u.id));
-  }
-
   addMember(): void {
-    const data: AddProjectMemberDialogData = {
-      projectId: this.projectId,
-      candidateUsers: this.candidateUsers(),
-      roles: this.roles(),
-    };
-    this.dialog
-      .open(AddProjectMemberDialogComponent, { data, width: '480px' })
-      .afterClosed()
-      .subscribe((added?: ProjectMember) => {
-        if (added) {
-          this.notifications.success(`"${added.username}" added to the project.`);
-          this.load();
-        }
-      });
+    this.projectService.listCandidateUsers(this.projectId).subscribe((candidateUsers) => {
+      const data: AddProjectMemberDialogData = {
+        projectId: this.projectId,
+        candidateUsers,
+        roles: this.roles(),
+      };
+      this.dialog
+        .open(AddProjectMemberDialogComponent, { data, width: '480px' })
+        .afterClosed()
+        .subscribe((added?: ProjectMember) => {
+          if (added) {
+            this.notifications.success(`"${added.username}" added to the project.`);
+            this.load();
+          }
+        });
+    });
   }
 
   assignRoles(member: ProjectMember): void {

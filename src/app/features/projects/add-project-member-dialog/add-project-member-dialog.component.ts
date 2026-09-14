@@ -8,15 +8,14 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ProjectService } from '../../../core/services/project.service';
 import { AuthService } from '../../../core/services/auth.service';
-import { ProjectMember } from '../../../core/models/project.model';
+import { CandidateUser, ProjectMember } from '../../../core/models/project.model';
 import { Role } from '../../../core/models/role.model';
-import { User } from '../../../core/models/user.model';
 import { ApiError } from '../../../core/models/api-error.model';
 
 export interface AddProjectMemberDialogData {
   projectId: number;
-  /** Users not already a member of this project - see ProjectMembersComponent, which filters the full user list down before opening this dialog. */
-  candidateUsers: User[];
+  /** Users not already a member of this project - fetched via ProjectService.listCandidateUsers, which needs no global USER_READ authority. */
+  candidateUsers: CandidateUser[];
   roles: Role[];
 }
 

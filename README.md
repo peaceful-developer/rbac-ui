@@ -236,6 +236,17 @@ already returns exactly the caller's visible set, so the page has no
 
 ![Projects list](docs/screenshots/19-projects-list.png)
 
+**A non-Master-Admin doesn't see this "all projects" browser at all.** The
+sidenav's brand area (top-left, normally "IAM Portal") instead shows the name
+of their own project — `ShellComponent` calls `GET /api/projects` (already
+scoped to the caller) on load, and swaps the brand label for it when the
+signed-in user isn't a Master Admin, dropping the standalone **Projects** nav
+link entirely. If that project's the one they're a `SUPER_ADMIN` of, the
+brand becomes a direct link straight into its member page — no detour through
+a list of tenants they have no reason to browse.
+
+![A Super Admin's sidenav: their project's name replaces "IAM Portal", no Projects link](docs/screenshots/26-super-admin-project-brand.png)
+
 **Create/edit a project** — Master-Admin-only (`New project`, the edit
 pencil, and delete are all gated `*appHasPermission="'MASTER_ADMIN'"`): a
 name and optional description.
@@ -259,10 +270,21 @@ Super Admin.
 
 ![Add project member dialog](docs/screenshots/22-add-project-member-dialog.png)
 
+The user picker is powered by `ProjectService.listCandidateUsers`
+(`GET /api/projects/{id}/candidate-users`), **not** the global user list —
+deliberately: a real Super Admin holds no `USER_READ` authority (that stays a
+Master Admin/legacy-`ADMIN` affair), so reusing `UserService.list()` here
+would 403 for exactly the person this dialog is for. This endpoint returns
+only the minimal `{id, username, email}` of users not yet on the project,
+gated the same as adding a member rather than requiring global user access.
+
+![Picking a candidate user as a real Super Admin, no global USER_READ held](docs/screenshots/28-add-member-candidate-users.png)
+
 **Assign roles / remove a member** work the same way — the assign-roles
 dialog keeps `SUPER_ADMIN` visible (never silently dropping it) if the member
 already holds it, but still only a Master Admin can add or remove it; removing
-a `SUPER_ADMIN` member is likewise Master-Admin-only.
+a `SUPER_ADMIN` member is likewise Master-Admin-only (including removing
+*themselves* — a Super Admin can't demote or remove their own row).
 
 ### Promoting or revoking a Master Admin
 
