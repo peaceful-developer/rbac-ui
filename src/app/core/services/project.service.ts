@@ -6,6 +6,7 @@ import {
   AddProjectMemberRequest,
   CandidateUser,
   CreateProjectRequest,
+  CreateProjectUserRequest,
   Project,
   ProjectMember,
   UpdateProjectMemberRolesRequest,
@@ -49,6 +50,11 @@ export class ProjectService {
 
   addMember(projectId: number, request: AddProjectMemberRequest): Observable<ProjectMember> {
     return this.http.post<ProjectMember>(`${this.base}/${projectId}/members`, request);
+  }
+
+  /** Creates a brand-new account directly in this project - what a Super Admin uses to onboard staff who have no account yet (global user creation needs USER_WRITE, which they don't hold). */
+  createUser(projectId: number, request: CreateProjectUserRequest): Observable<ProjectMember> {
+    return this.http.post<ProjectMember>(`${this.base}/${projectId}/users`, request);
   }
 
   updateMemberRoles(projectId: number, userId: number, request: UpdateProjectMemberRolesRequest): Observable<ProjectMember> {

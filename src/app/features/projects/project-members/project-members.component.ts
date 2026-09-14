@@ -16,6 +16,10 @@ import { CandidateUser, Project, ProjectMember } from '../../../core/models/proj
 import { Role } from '../../../core/models/role.model';
 import { AddProjectMemberDialogComponent, AddProjectMemberDialogData } from '../add-project-member-dialog/add-project-member-dialog.component';
 import {
+  CreateProjectUserDialogComponent,
+  CreateProjectUserDialogData,
+} from '../create-project-user-dialog/create-project-user-dialog.component';
+import {
   AssignProjectMemberRolesDialogComponent,
   AssignProjectMemberRolesDialogData,
 } from '../assign-project-member-roles-dialog/assign-project-member-roles-dialog.component';
@@ -54,6 +58,7 @@ export class ProjectMembersComponent implements OnInit {
   readonly members = signal<ProjectMember[]>([]);
   readonly roles = signal<Role[]>([]);
   readonly loading = signal(true);
+  readonly isMasterAdmin = this.auth.isMasterAdmin;
 
   /** A Master Admin, or SUPER_ADMIN within this specific project - matches what the backend actually allows via ProjectAuthorizationService. */
   canManage(): boolean {
@@ -101,6 +106,23 @@ export class ProjectMembersComponent implements OnInit {
           }
         });
     });
+  }
+
+  createUser(): void {
+    const data: CreateProjectUserDialogData = {
+      projectId: this.projectId,
+      projectName: this.project()?.name ?? 'this project',
+      roles: this.roles(),
+    };
+    this.dialog
+      .open(CreateProjectUserDialogComponent, { data, width: '520px' })
+      .afterClosed()
+      .subscribe((created?: ProjectMember) => {
+        if (created) {
+          this.notifications.success(`"${created.username}" created and added to the project.`);
+          this.load();
+        }
+      });
   }
 
   assignRoles(member: ProjectMember): void {
