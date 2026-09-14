@@ -1,0 +1,81 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Projects</h1>
+    <button mat-flat-button color="primary" (click)="createProject()" *appHasPermission="'MASTER_ADMIN'">
+      <mat-icon>add</mat-icon>
+      New project
+    </button>
+  </div>
+
+  <div class="table-card mat-elevation-z1">
+    @if (loading()) {
+      <div class="loading-row">
+        <mat-spinner diameter="32"></mat-spinner>
+      </div>
+    } @else if (projects().length === 0) {
+      <div class="empty-state">
+        <mat-icon>folder_off</mat-icon>
+        <span>No projects yet.</span>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="projects()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let project"><strong>{{ project.name }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let project">{{ project.description || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="myRoles">
+          <th mat-header-cell *matHeaderCellDef>My roles</th>
+          <td mat-cell *matCellDef="let project">
+            <div class="chip-row">
+              @if (project.myRoles.length === 0) {
+                <span class="muted">—</span>
+              }
+              @for (role of project.myRoles; track role) {
+                <mat-chip>{{ role }}</mat-chip>
+              }
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="actions-header">Actions</th>
+          <td mat-cell *matCellDef="let project" class="actions-cell">
+            @if (canManage(project)) {
+              <button mat-icon-button matTooltip="Manage members" aria-label="Manage members" (click)="openMembers(project)">
+                <mat-icon>group</mat-icon>
+              </button>
+            }
+            <button
+              mat-icon-button
+              matTooltip="Edit"
+              aria-label="Edit"
+              (click)="editProject(project)"
+              *appHasPermission="'MASTER_ADMIN'"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Delete"
+              aria-label="Delete"
+              color="warn"
+              (click)="deleteProject(project)"
+              *appHasPermission="'MASTER_ADMIN'"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    }
+  </div>
+</div>

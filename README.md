@@ -10,6 +10,7 @@ the backend's real RBAC rules (a button you can't use, you simply won't see).
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Step-by-step usage guide (with screenshots)](#step-by-step-usage-guide-with-screenshots)
+- [Master Admin & Projects](#master-admin--projects)
 - [Project structure](#project-structure)
 - [Architecture notes](#architecture-notes)
 - [Available scripts](#available-scripts)
@@ -80,6 +81,12 @@ sections are visible:
 
 ![Dashboard as admin](docs/screenshots/03-dashboard-admin.png)
 
+If your account is a platform **Master Admin**, a teal **Master Admin** badge
+appears at the top of the sidenav — see
+[Master Admin & Projects](#master-admin--projects) below.
+
+![Dashboard with the Master Admin badge](docs/screenshots/18-dashboard-master-admin-badge.png)
+
 The sidenav on the left is itself permission-gated — **Users**, **Roles** and
 **Permissions** links only render if you hold the corresponding `*_READ`
 authority (`*appHasPermission` directive). A plain `USER` account sees only
@@ -119,7 +126,12 @@ portal asks for confirmation first.
 ![Delete user confirmation](docs/screenshots/08-users-delete-confirm.png)
 
 Each action button only appears if you hold the permission it needs — a
-`USER_READ`-only account sees the table but no edit/assign/delete icons.
+`USER_READ`-only account sees the table but no edit/assign/delete icons. A
+**Master Admin** additionally sees a shield toggle icon on every row to
+promote or revoke that user's own Master Admin status — see
+[Master Admin & Projects](#master-admin--projects).
+
+![Users list with the Master Admin toggle](docs/screenshots/24-users-master-admin-toggle.png)
 
 ### 4. Managing roles (`ROLE_READ` / `ROLE_WRITE` / `ROLE_DELETE`)
 
@@ -140,7 +152,20 @@ waiting for a TTL to expire.
 
 ![Assign permissions dialog](docs/screenshots/11-roles-assign-permissions-dialog.png)
 
-### 5. Managing permissions (`PERMISSION_READ` / `PERMISSION_WRITE` / `PERMISSION_DELETE`)
+**Locked roles** (a small lock icon next to the name — the seeded `ADMIN` and
+`SUPER_ADMIN`, and any role a Master Admin created) can only be edited,
+re-permissioned or deleted by a Master Admin, even by someone else holding
+`ROLE_WRITE`/`ROLE_DELETE`. A Master Admin sees the usual action icons on
+every row regardless of lock state; anyone else sees a plain **Locked** label
+in place of the icons for those rows — the UI mirrors the backend's
+`RoleService.requireEditable` check exactly, so there's never a button that
+looks clickable but 403s.
+
+![Roles list with locked-role indicator](docs/screenshots/23-roles-lock-indicator.png)
+
+![Locked roles as seen by a non-Master-Admin holding ROLE_WRITE](docs/screenshots/25-roles-locked-non-master-admin.png)
+
+### 5. Managing permissions (`PERMISSION_READ` to view, `MASTER_ADMIN` to create/delete)
 
 Click **Permissions** for the flat list of every grantable action in the system.
 
@@ -148,7 +173,11 @@ Click **Permissions** for the flat list of every grantable action in the system.
 
 **Create a permission** — just a name (convention: `SCOPE_ACTION`, e.g.
 `REPORT_VIEW`) and an optional description. Once created, it's immediately
-selectable when building or editing a role.
+selectable when building or editing a role. Creating and deleting permissions
+is **Master-Admin-only** — the catalog of what a role can even grant is
+platform-level, not something an ordinary `PERMISSION_WRITE` holder can
+expand, so the **New permission** button and the row delete icons only render
+for a Master Admin.
 
 ![Create permission dialog](docs/screenshots/13-permissions-create-dialog.png)
 
@@ -179,6 +208,70 @@ a blank screen or a failed API call.
 
 ![Access denied page](docs/screenshots/17-forbidden-page.png)
 
+## Master Admin & Projects
+
+Mirrors the backend's multi-tenant hierarchy (see the
+[backend README](../rbac#master-admin--projects) for the full design):
+
+```
+Master Admin (platform-level, not a Role — a flag on User)
+   └─ creates permissions, locked roles, and Projects
+      └─ each Project has one or more Super Admins (assigned only by a Master Admin)
+         └─ a Super Admin adds other users to their project on any existing role
+```
+
+`AuthService.isMasterAdmin` reads a literal `MASTER_ADMIN` authority straight
+out of the decoded JWT (same no-extra-request pattern as every other
+authority check in this app), and the `*appHasPermission="'MASTER_ADMIN'"`
+directive gates every Master-Admin-only control the same way `USER_WRITE` or
+`ROLE_DELETE` do elsewhere in the portal.
+
+### Projects (new nav item, no route guard — the backend scopes visibility)
+
+Click **Projects** for the list of tenants. A Master Admin sees every
+project; anyone else sees only the projects where they hold a membership —
+the list itself needs no client-side gating because `GET /api/projects`
+already returns exactly the caller's visible set, so the page has no
+`permissionGuard` (unlike `/users`, `/roles`, `/permissions`).
+
+![Projects list](docs/screenshots/19-projects-list.png)
+
+**Create/edit a project** — Master-Admin-only (`New project`, the edit
+pencil, and delete are all gated `*appHasPermission="'MASTER_ADMIN'"`): a
+name and optional description.
+
+![Create project dialog](docs/screenshots/20-project-create-dialog.png)
+
+**Manage members** — click the group icon (visible to a Master Admin, or to
+that project's own `SUPER_ADMIN`) to open the project's member list: each
+member's username, email, and the roles they hold *within this project*
+(from the same global role catalog as everywhere else — roles aren't
+project-specific, only the assignment is).
+
+![Project members page](docs/screenshots/21-project-members.png)
+
+**Add a member** — pick any user who isn't already on the project and one or
+more roles to grant them. The role multi-select filters out `SUPER_ADMIN`
+unless you're a Master Admin, matching the backend rule that only a Master
+Admin can mint a project's Super Admin — a project's own Super Admin can add
+managers, reporters, editors, or any other existing role, but never a peer
+Super Admin.
+
+![Add project member dialog](docs/screenshots/22-add-project-member-dialog.png)
+
+**Assign roles / remove a member** work the same way — the assign-roles
+dialog keeps `SUPER_ADMIN` visible (never silently dropping it) if the member
+already holds it, but still only a Master Admin can add or remove it; removing
+a `SUPER_ADMIN` member is likewise Master-Admin-only.
+
+### Promoting or revoking a Master Admin
+
+Only an existing Master Admin can create another one. On the **Users** page,
+a Master Admin sees a shield icon on every row (`*appHasPermission="'MASTER_ADMIN'"`)
+that calls `PATCH /api/users/{id}/master-admin` after a confirmation dialog —
+there's no separate "Master Admin" role to assign via the usual roles UI,
+since it's deliberately a flag on the account, not a row in the role catalog.
+
 ## Project structure
 
 ```
@@ -196,9 +289,10 @@ src/app/
   features/
     auth/              login, register
     dashboard/
-    users/              list + create/edit dialog + assign-roles dialog
-    roles/               list + create/edit dialog + assign-permissions dialog
-    permissions/          list + create dialog
+    users/              list + create/edit dialog + assign-roles dialog + master-admin toggle
+    roles/               list (with locked-role indicator) + create/edit dialog + assign-permissions dialog
+    permissions/          list + create dialog (Master-Admin-only)
+    projects/              list + create/edit dialog + members page + add-member/assign-roles dialogs
     profile/             view self + change password
     errors/               forbidden, not-found
   shared/

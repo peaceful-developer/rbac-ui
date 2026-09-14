@@ -1,7 +1,7 @@
 <div class="page">
   <div class="page-header">
     <h1>Permissions</h1>
-    <button mat-flat-button color="primary" (click)="createPermission()" *appHasPermission="'PERMISSION_WRITE'">
+    <button mat-flat-button color="primary" (click)="createPermission()" *appHasPermission="'MASTER_ADMIN'">
       <mat-icon>add</mat-icon>
       New permission
     </button>
@@ -38,7 +38,7 @@
               aria-label="Delete"
               color="warn"
               (click)="deletePermission(permission)"
-              *appHasPermission="'PERMISSION_DELETE'"
+              *appHasPermission="'MASTER_ADMIN'"
             >
               <mat-icon>delete</mat-icon>
             </button>

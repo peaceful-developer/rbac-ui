@@ -38,6 +38,7 @@ export class ShellComponent {
 
   readonly user = this.auth.user;
   readonly username = this.auth.username;
+  readonly isMasterAdmin = this.auth.isMasterAdmin;
 
   logout(): void {
     this.auth.logout().subscribe({

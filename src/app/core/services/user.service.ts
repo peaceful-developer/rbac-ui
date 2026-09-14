@@ -3,7 +3,14 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Page } from '../models/page.model';
-import { AssignRolesRequest, ChangePasswordRequest, CreateUserRequest, UpdateUserRequest, User } from '../models/user.model';
+import {
+  AssignRolesRequest,
+  ChangePasswordRequest,
+  CreateUserRequest,
+  SetMasterAdminRequest,
+  UpdateUserRequest,
+  User,
+} from '../models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -33,6 +40,10 @@ export class UserService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/${id}`);
+  }
+
+  setMasterAdmin(id: number, request: SetMasterAdminRequest): Observable<User> {
+    return this.http.patch<User>(`${this.base}/${id}/master-admin`, request);
   }
 
   changeOwnPassword(request: ChangePasswordRequest): Observable<void> {

@@ -126,6 +126,37 @@ export class UserListComponent implements OnInit {
       });
   }
 
+  toggleMasterAdmin(user: User): void {
+    const promoting = !user.masterAdmin;
+    const data: ConfirmDialogData = promoting
+      ? {
+          title: 'Promote to Master Admin',
+          message: `Grant "${user.username}" Master Admin? They will be able to manage permissions, non-editable roles, other Master Admins, and every project.`,
+          confirmLabel: 'Promote',
+          destructive: false,
+        }
+      : {
+          title: 'Revoke Master Admin',
+          message: `Remove Master Admin from "${user.username}"?`,
+          confirmLabel: 'Revoke',
+          destructive: true,
+        };
+    this.dialog
+      .open(ConfirmDialogComponent, { data, width: '420px' })
+      .afterClosed()
+      .subscribe((confirmed?: boolean) => {
+        if (!confirmed) {
+          return;
+        }
+        this.userService.setMasterAdmin(user.id, { masterAdmin: promoting }).subscribe(() => {
+          this.notifications.success(
+            promoting ? `"${user.username}" is now a Master Admin.` : `Master Admin revoked for "${user.username}".`,
+          );
+          this.load();
+        });
+      });
+  }
+
   deleteUser(user: User): void {
     const data: ConfirmDialogData = {
       title: 'Delete user',
