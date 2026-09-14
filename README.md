@@ -245,6 +245,12 @@ link entirely. If that project's the one they're a `SUPER_ADMIN` of, the
 brand becomes a direct link straight into its member page — no detour through
 a list of tenants they have no reason to browse.
 
+Their **Users** nav item points at that same project page rather than the
+platform-wide `/users` list (which they can't see anyway, having no
+`USER_READ`). So a Super Admin gets the same "Users" entry a Master Admin
+does, scoped to their own tenant: the users they see, add and remove are
+their project's, and nobody else's.
+
 ![A Super Admin's sidenav: their project's name replaces "IAM Portal", no Projects link](docs/screenshots/26-super-admin-project-brand.png)
 
 **Create/edit a project** — Master-Admin-only (`New project`, the edit
@@ -254,12 +260,31 @@ name and optional description.
 ![Create project dialog](docs/screenshots/20-project-create-dialog.png)
 
 **Manage members** — click the group icon (visible to a Master Admin, or to
-that project's own `SUPER_ADMIN`) to open the project's member list: each
+that project's own `SUPER_ADMIN`) to open the project's user list: each
 member's username, email, and the roles they hold *within this project*
 (from the same global role catalog as everywhere else — roles aren't
-project-specific, only the assignment is).
+project-specific, only the assignment is). This is the same page a Super
+Admin reaches from their **Users** nav item.
 
-![Project members page](docs/screenshots/21-project-members.png)
+![A project's users, as its Super Admin sees them](docs/screenshots/30-super-admin-users-tab.png)
+
+Two ways to put someone in a project, because a tenant's staff usually
+*don't* already have accounts:
+
+- **New user** creates an account and adds it to this project in one step
+  (`POST /api/projects/{id}/users`).
+- **Add existing user** picks someone who already has an account
+  (`POST /api/projects/{id}/members`).
+
+![Creating a new user inside a project](docs/screenshots/31-create-project-user-dialog.png)
+
+The new account gets only the permission-less baseline `USER` global role, so
+everything it can actually do comes from the project roles picked here — it
+can't see the platform-wide user list, any other project, or anything outside
+the tenant it was created in. Note `SUPER_ADMIN` is absent from that role
+picker: only a Master Admin can mint one.
+
+![The new user lands in this project only](docs/screenshots/32-new-user-created-in-project.png)
 
 **Add a member** — pick any user who isn't already on the project and one or
 more roles to grant them. The role multi-select filters out `SUPER_ADMIN`

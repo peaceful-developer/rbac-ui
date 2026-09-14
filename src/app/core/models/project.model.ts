@@ -37,6 +37,16 @@ export interface AddProjectMemberRequest {
   roles: string[];
 }
 
+/** POST /api/projects/{id}/users - creates a new account straight into the project; roles are its roles *within* that project. */
+export interface CreateProjectUserRequest {
+  username: string;
+  email: string;
+  password: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  roles: string[];
+}
+
 export interface UpdateProjectMemberRolesRequest {
   roles: string[];
 }

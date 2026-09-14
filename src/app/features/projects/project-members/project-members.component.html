@@ -1,17 +1,25 @@
 <div class="page">
   <div class="page-header">
     <div>
-      <a routerLink="/projects" class="back-link">
-        <mat-icon>arrow_back</mat-icon>
-        Projects
-      </a>
-      <h1>{{ project()?.name || 'Project' }} &mdash; Members</h1>
+      @if (isMasterAdmin()) {
+        <a routerLink="/projects" class="back-link">
+          <mat-icon>arrow_back</mat-icon>
+          Projects
+        </a>
+      }
+      <h1>{{ project()?.name || 'Project' }} &mdash; Users</h1>
     </div>
     @if (canManage()) {
-      <button mat-flat-button color="primary" (click)="addMember()">
-        <mat-icon>person_add</mat-icon>
-        Add member
-      </button>
+      <div class="header-actions">
+        <button mat-stroked-button (click)="addMember()">
+          <mat-icon>person_add</mat-icon>
+          Add existing user
+        </button>
+        <button mat-flat-button color="primary" (click)="createUser()">
+          <mat-icon>person_add_alt_1</mat-icon>
+          New user
+        </button>
+      </div>
     }
   </div>
 
@@ -23,7 +31,7 @@
     } @else if (members().length === 0) {
       <div class="empty-state">
         <mat-icon>group_off</mat-icon>
-        <span>No members yet.</span>
+        <span>No users in this project yet.</span>
       </div>
     } @else {
       <table mat-table [dataSource]="members()">

@@ -30,15 +30,23 @@
           <span matListItemTitle>Projects</span>
         </a>
       }
-      <a
-        mat-list-item
-        routerLink="/users"
-        routerLinkActive="active-link"
-        *appHasPermission="'USER_READ'"
-      >
-        <mat-icon matListItemIcon>group</mat-icon>
-        <span matListItemTitle>Users</span>
-      </a>
+      @if (manageableProject(); as proj) {
+        <!-- A project's Super Admin manages users inside their own project only, so "Users" points there rather than at the platform-wide list they can't see. -->
+        <a mat-list-item [routerLink]="['/projects', proj.id, 'members']" routerLinkActive="active-link">
+          <mat-icon matListItemIcon>group</mat-icon>
+          <span matListItemTitle>Users</span>
+        </a>
+      } @else {
+        <a
+          mat-list-item
+          routerLink="/users"
+          routerLinkActive="active-link"
+          *appHasPermission="'USER_READ'"
+        >
+          <mat-icon matListItemIcon>group</mat-icon>
+          <span matListItemTitle>Users</span>
+        </a>
+      }
       <a
         mat-list-item
         routerLink="/roles"
