@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Create permission</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" class="dialog-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="e.g. REPORT_VIEW" cdkFocusInitial />
+      @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+
+  @if (errorMessage()) {
+    <div class="dialog-error">{{ errorMessage() }}</div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close [disabled]="loading()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="submit()" [disabled]="loading()">
+    @if (loading()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      Create
+    }
+  </button>
+</mat-dialog-actions>

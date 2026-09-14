@@ -1,0 +1,60 @@
+<div class="auth-page">
+  <mat-card class="auth-card">
+    <div class="auth-brand">
+      <mat-icon>admin_panel_settings</mat-icon>
+      <h1>IAM Portal</h1>
+    </div>
+    <p class="auth-subtitle">Sign in to manage users, roles and permissions.</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="auth-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" autocomplete="username" cdkFocusInitial />
+        @if (form.controls.username.hasError('required') && form.controls.username.touched) {
+          <mat-error>Username is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="'Toggle password visibility'"
+        >
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.controls.password.hasError('required') && form.controls.password.touched) {
+          <mat-error>Password is required</mat-error>
+        }
+      </mat-form-field>
+
+      @if (errorMessage()) {
+        <div class="auth-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <button mat-flat-button color="primary" type="submit" class="full-width auth-submit" [disabled]="loading()">
+        @if (loading()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account? <a routerLink="/register">Create one</a>
+    </p>
+  </mat-card>
+</div>

@@ -1,0 +1,65 @@
+<div class="page">
+  <div class="page-header">
+    <h1>Welcome{{ user()?.firstName ? ', ' + user()?.firstName : '' }}</h1>
+  </div>
+
+  @if (user(); as u) {
+    <mat-card class="welcome-card">
+      <mat-card-content>
+        <div class="welcome-row">
+          <div>
+            <div class="welcome-username">&#64;{{ u.username }}</div>
+            <div class="welcome-email">{{ u.email }}</div>
+          </div>
+          <div class="welcome-roles">
+            @for (role of u.roles; track role) {
+              <mat-chip>{{ role }}</mat-chip>
+            }
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <div class="quick-links">
+    <a class="quick-link-card" routerLink="/users" *appHasPermission="'USER_READ'">
+      <mat-card>
+        <mat-card-content>
+          <mat-icon>group</mat-icon>
+          <h2>Users</h2>
+          <p>Manage accounts, roles and account status.</p>
+        </mat-card-content>
+      </mat-card>
+    </a>
+
+    <a class="quick-link-card" routerLink="/roles" *appHasPermission="'ROLE_READ'">
+      <mat-card>
+        <mat-card-content>
+          <mat-icon>security</mat-icon>
+          <h2>Roles</h2>
+          <p>Define roles and the permissions they carry.</p>
+        </mat-card-content>
+      </mat-card>
+    </a>
+
+    <a class="quick-link-card" routerLink="/permissions" *appHasPermission="'PERMISSION_READ'">
+      <mat-card>
+        <mat-card-content>
+          <mat-icon>key</mat-icon>
+          <h2>Permissions</h2>
+          <p>Manage the individual grantable actions.</p>
+        </mat-card-content>
+      </mat-card>
+    </a>
+
+    <a class="quick-link-card" routerLink="/profile">
+      <mat-card>
+        <mat-card-content>
+          <mat-icon>account_circle</mat-icon>
+          <h2>My profile</h2>
+          <p>View your account and change your password.</p>
+        </mat-card-content>
+      </mat-card>
+    </a>
+  </div>
+</div>
