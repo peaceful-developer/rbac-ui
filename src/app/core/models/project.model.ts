@@ -15,6 +15,13 @@ export interface ProjectMember {
   roles: string[];
 }
 
+/** Minimal projection returned by GET /api/projects/{id}/candidate-users - just enough to pick someone, no account/role state. */
+export interface CandidateUser {
+  id: number;
+  username: string;
+  email: string;
+}
+
 export interface CreateProjectRequest {
   name: string;
   description?: string | null;

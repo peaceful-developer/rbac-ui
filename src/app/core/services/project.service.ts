@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   AddProjectMemberRequest,
+  CandidateUser,
   CreateProjectRequest,
   Project,
   ProjectMember,
@@ -39,6 +40,11 @@ export class ProjectService {
 
   listMembers(projectId: number): Observable<ProjectMember[]> {
     return this.http.get<ProjectMember[]>(`${this.base}/${projectId}/members`);
+  }
+
+  /** Users not yet on this project - powers the "add member" picker without requiring the global USER_READ authority a Super Admin doesn't hold. */
+  listCandidateUsers(projectId: number): Observable<CandidateUser[]> {
+    return this.http.get<CandidateUser[]>(`${this.base}/${projectId}/candidate-users`);
   }
 
   addMember(projectId: number, request: AddProjectMemberRequest): Observable<ProjectMember> {
